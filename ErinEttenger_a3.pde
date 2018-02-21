@@ -60,7 +60,7 @@ class dimension{
 }
 
 void setup(){
-  surface.setResizable(true);
+ // surface.setResizable(true);
   size(500,500);
   //dimensionMap = new HashMap<Integer, dimension>();
   loadMyInput();
