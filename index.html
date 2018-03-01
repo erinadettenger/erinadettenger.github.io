@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Test</title>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <style type="text/css">
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 140px;
+            height: 90px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+		</style>
+    </head>
+    <body>
+      <h1 id="p1">US Election Results 2016</h1>
+
+        <script type="text/javascript">
+        var selectedYear = "2016";
+
+        function updateTitle(){
+          // var w = 1000;
+          // var h = 100;
+          // var svg = d3.select("body")
+          //             .append("svg")
+          //             .attr("class", "title")
+          //             .attr("width", w)
+          //             .attr("height", h);
+          //
+          //     svg.selectAll("text")
+          //         .enter()
+          //         .append("text")
+          //         .text("US Presidental Election Results:" + selectedYear)
+          //         .attr("text-anchor", "middle")
+          //         .attr("x", w*.1)
+          //         .attr("y",  h*.5)
+          //         .style("fill", "rgb(0,0,0)");
+          document.getElementById("p1").innerHTML = "US Election Results " + selectedYear;
+
+        }
+        updateTitle();
+        console.log("SY" + selectedYear);
+        d3.csv("data/yearwise-winner.csv", function(data) {
+          var w = 1000;
+          var h = 150;
+          var boxPadding = 1;
+          console.log(data[0]);
+          var svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", w)
+                      .attr("height", h);
+
+          svg.selectAll("circle")
+              .data(data)
+              .enter()
+              .append("circle")
+              .attr("cx", function(d, i){
+                console.log("got  here");
+                return w/10 + (w/24 * i);
+
+              })
+              .attr("cy", function(d, i){
+
+                  return h*.2;
+
+              })
+              .attr("r", function(d){
+                  return 8;
+              })
+              .style("fill", function(d) {
+                  if(d['PARTY'] == 'D'){
+                    return "rgb(0, 0 , 255)";
+                  }
+                  else{
+                    return "rgb(255, 0 , 0)";
+                  }
+    })
+            .on("click", function(d) {
+              selectedYear = d['YEAR'];
+              console.log("GOT IT");
+              updateData();
+                //d3.select("svg.title").remove();
+              updateTitle();
+              d3.select("svg.map").remove();
+
+                });
+
+              svg.selectAll("text.timeline")
+                  .data(data)
+                  .enter()
+                  .append("text")
+                    .attr("class", "timeline")
+                  .text(function(d) {
+                    return d['YEAR'];
+                  })
+                  .attr("text-anchor", "middle")
+                  .attr("x", function(d,i){
+
+                    return w/10 + (w/24 * i);
+
+                  })
+                  .attr("y", function(d){
+
+                      return h*.45;
+
+                  })
+                  .style("fill", "rgb(0,0,0)");
+
+
+                  var increment = w/8;
+                  var legend = ['-60.0 to -50.0','-50.0 to -40.0','-40.0 to -30.0','-30.0 to -20.0','-20.0 to -10.0','-10.0 to 0','0 to 10.0','10.0 to 20.0','20.0 to 30.0','30.0 to 40.0','40.0 to 50.0','50.0 to 60.0'];
+                  var boxPadding = 1;
+
+                  //LEGEND
+              svg.selectAll("rect")
+                  .data(legend)
+                  .enter()
+                  .append("rect")
+                  .attr("x", function(d,i){
+                    //increment += w/24;
+                    return i * (w / legend.length);
+
+                  })
+                  .attr("y", function(d){
+                      return h * .7;
+
+                  })
+
+                  .attr("width", w / legend.length - boxPadding)
+                  .attr("height", function(d) {
+                      return h/12;
+                   })
+                   .style("fill", function(d,i) {
+                     var blue = 0;
+                     var green = 0;
+                     var red = 0;
+                     if(i == 11 ){
+                       red = 102;
+                       green = 0;
+                       blue = 0;
+
+                     }
+                     else if(i == 10){
+                       red = 204;
+                       green = 0;
+                       blue = 0;
+                     }
+                     else if(i == 9){
+                       red = 255;
+                       green = 0;
+                       blue = 0;
+                     }
+                     else if(i == 8){
+                       red = 255;
+                       green = 51;
+                       blue = 51;
+                     }
+                     else if(i == 7){
+                       red = 255;
+                       green = 102;
+                       blue = 102;
+                     }
+                     else if(i == 6){
+                       red = 255;
+                       green = 153;
+                       blue = 153;
+                     }
+                     else if(i == 5){
+                       red = 153;
+                       green = 153;
+                       blue = 255;
+                     }
+                     else if(i == 4){
+                       red = 102;
+                       green = 102;
+                       blue = 255;
+                     }
+                     else if(i == 3){
+                       red = 51;
+                       green = 51;
+                       blue = 255;
+                     }
+                     else if(i == 2){
+                       red = 0;
+                       green = 0;
+                       blue = 255;
+                     }
+                     else if(i == 1){
+                       red = 0;
+                       green = 0;
+                       blue = 204;
+                     }
+                     else if(i == 0){
+                       red = 0;
+                       green = 0;
+                       blue = 102;
+                     }
+                     return "rgb(" + red+ ", " + green+ "," + blue  +")";
+
+
+
+
+        });
+        var incthisbish = 0;
+            svg.selectAll("text.legend")
+                .data(legend)
+                .enter()
+                .append("text")
+                 .attr("class", "legend")
+                .text(function(d,i) {
+                  return legend[i];
+                })
+                .attr("text-anchor", "middle")
+                .attr("font-size", "13px")
+                .attr("x", function(d,i){
+                  //increment += w/24;
+                  if (i == 0){
+                    incthisbish += w / (legend.length*1.98)
+                  }
+                  else{
+                    incthisbish += (w / (legend.length));
+                  }
+
+                  return incthisbish;
+
+                })
+                .attr("y", function(d){
+                    return h * .9;
+
+                })
+                .style("fill", "rgb(0,0,0)");
+
+                updateData();
+function updateData() {
+
+          d3.csv("data/election-results-" + selectedYear + ".csv", function(data) {
+
+              var w = 1000;
+              var h = 700;
+              var boxPadding = 1;
+              var found = data[3];
+              var percentDifference = 0;
+
+              var JSONArray = {
+
+                  "AK": {
+                      "row":0,
+                      "column": 0
+                  },
+                  "ME": {
+                      "row": 0,
+                      "column": 11
+                  },
+
+                 "VT": {
+                      "row":1,
+                      "column": 10
+                  },
+                  "NH": {
+                      "row": 1,
+                      "column": 11
+                  },
+                  "WA" : {
+                    "row": 2,
+                    "column": 1
+                  },
+                  "ID" : {
+                    "row": 2,
+                    "column": 2
+                  },
+                  "MT" : {
+                    "row": 2,
+                    "column": 3
+                  },
+                  "ND" : {
+                    "row": 2,
+                    "column": 4
+                  },
+                  "MN" : {
+                    "row": 2,
+                    "column": 5
+                  },
+                  "IL" : {
+                    "row": 2,
+                    "column": 6
+                  },
+
+                  "WI" : {
+                    "row": 2,
+                    "column": 7
+                  },
+                  "MI" : {
+                    "row": 2,
+                    "column": 8
+                  },
+                  "NY" : {
+                    "row": 2,
+                    "column": 9
+                  },
+                  "RI" : {
+                    "row": 2,
+                    "column": 10
+                  },
+                  "MA" : {
+                    "row": 2,
+                    "column": 11
+                  },
+                  "OR" : {
+                    "row": 3,
+                    "column": 1
+                  },
+                  "NV" : {
+                    "row": 3,
+                    "column": 2
+                  },
+                  "WY" : {
+                    "row": 3,
+                    "column": 3
+                  },
+                  "SD" : {
+                    "row": 3,
+                    "column": 4
+                  },
+                  "IA" : {
+                    "row": 3,
+                    "column": 5
+                  },
+                  "IN" : {
+                    "row": 3,
+                    "column": 6
+                  },
+                  "OH" : {
+                    "row": 3,
+                    "column": 7
+                  },
+                  "PA" : {
+                    "row": 3,
+                    "column": 8
+                  },
+                  "NJ" : {
+                    "row": 3,
+                    "column": 9
+                  },
+                  "CT" : {
+                    "row": 3,
+                    "column": 10
+                  },
+                  "CA" : {
+                    "row": 4,
+                    "column": 1
+                  },
+                  "UT" : {
+                    "row": 4,
+                    "column": 2
+                  },
+                  "CO" : {
+                    "row": 4,
+                    "column": 3
+                  },
+                  "NE" : {
+                    "row": 4,
+                    "column": 4
+                  },
+                  "MO" : {
+                    "row": 4,
+                    "column": 5
+                  },
+                  "KY" : {
+                    "row": 4,
+                    "column": 6
+                  },
+                  "WV" : {
+                    "row": 4,
+                    "column": 7
+                  },
+                  "VA" : {
+                    "row": 4,
+                    "column": 8
+                  },
+                  "MD" : {
+                    "row": 4,
+                    "column": 9
+                  },
+                  "DC" : {
+                    "row": 4,
+                    "column": 10
+                  },
+                  "AZ" : {
+                    "row": 5,
+                    "column": 2
+                  },
+                  "NM" : {
+                    "row": 5,
+                    "column": 3
+                  },
+                  "KS" : {
+                    "row": 5,
+                    "column": 4
+                  },
+                  "AR" : {
+                    "row": 5,
+                    "column": 5
+                  },
+                  "TN" : {
+                    "row": 5,
+                    "column": 6
+                  },
+                  "NC" : {
+                    "row": 5,
+                    "column": 7
+                  },
+                  "SC" : {
+                    "row": 5,
+                    "column": 8
+                  },
+                  "DE" : {
+                    "row": 5,
+                    "column": 9
+                  },
+                  "OK" : {
+                    "row": 6,
+                    "column": 4
+                  },
+                  "LA" : {
+                    "row": 6,
+                    "column": 5
+                  },
+                  "MS" : {
+                    "row": 6,
+                    "column": 6
+                  },
+                  "AL" : {
+                    "row": 6,
+                    "column": 7
+                  },
+                  "GA" : {
+                    "row": 6,
+                    "column": 8
+                  },
+                  "HI" : {
+                    "row": 7,
+                    "column": 1
+                  },
+                  "TX" : {
+                    "row": 7,
+                    "column": 4
+                  },
+                  "FL" : {
+                    "row": 7,
+                    "column": 9
+                  },
+            }
+
+
+
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+
+              var svg = d3.select("body")
+                          .append("svg")
+                          .attr("class", "map")
+                          .attr("width", w)
+                          .attr("height", h);
+
+
+
+            var nextXPosition = 0;
+            var thisXPosition = 0;
+            var thisYPosition = 0;
+            var nextYPosition = 0;
+            svg.selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d){
+                  var name = d.Abbreviation;
+                    if(d.State == ""){
+                      return null;
+                    }
+                  var column = JSONArray[name].column;
+
+                  return column * w/12;
+
+                })
+                .attr("y", function(d,i){
+                    var name = d.Abbreviation;
+                    if(d.State == ""){
+                      return null;
+                    }
+                    var rows =   JSONArray[name].row;
+                    return rows * h/12;
+
+                })
+
+                .attr("width", (w/12) - boxPadding)
+                .attr("height", function(d) {
+                    return h/12;
+                 })
+                 .style("fill", function(d) {
+
+                      found = d;
+
+
+                          percentDifference = parseFloat(found.D_Percentage - found.R_Percentage);
+
+                         var blue = 0;
+                         var green = 0;
+                         var red = 0;
+                         //console.log(d['Abbreviation'] + ": " + percentDifference);
+                         if(percentDifference < parseFloat(-50.0) ){
+                           red = 102;
+                           green = 0;
+                           blue = 0;
+
+                         }
+                         else if(percentDifference< parseFloat(-40.0) ){
+                           red = 204;
+                           green = 0;
+                           blue = 0;
+                         }
+                         else if(percentDifference<parseFloat(-30.0) ){
+                           red = 255;
+                           green = 0;
+                           blue = 0;
+                         }
+                         else if(percentDifference<parseFloat(-20.0) ){
+                           red = 255;
+                           green = 51;
+                           blue = 51;
+                         }
+                         else if(percentDifference<parseFloat(-10.0)){
+                           red = 255;
+                           green = 102;
+                           blue = 102;
+                         }
+                         else if(percentDifference<=0 ){
+                           red = 255;
+                           green = 153;
+                           blue = 153;
+                         }
+                         else if(percentDifference<10.0){
+                           red = 153;
+                           green = 153;
+                           blue = 255;
+                         }
+                         else if(percentDifference<20.0){
+                           red = 102;
+                           green = 102;
+                           blue = 255;
+                         }
+                         else if(percentDifference<30.0 && percentDifference>=20){
+                           red = 51;
+                           green = 51;
+                           blue = 255;
+                         }
+                         else if(percentDifference<40.0 && percentDifference>=30){
+                           red = 0;
+                           green = 0;
+                           blue = 255;
+                         }
+                         else if(percentDifference<50.0 && percentDifference>=40){
+                           red = 0;
+                           green = 0;
+                           blue = 204;
+                         }
+                         else if(percentDifference>=50){
+                           red = 0;
+                           green = 0;
+                           blue = 102;
+                         }
+                         return "rgb(" + red+ ", " + green+ "," + blue  +")";
+
+
+                       })
+                       .on("mouseover", function(d) {//IMPLEMENT TOOLTIP
+                         var electorals = d.Total_EV;
+                         var n = 'N';
+                         if(electorals == null){
+                           electorals = d.N;
+                         }
+                         //remove weird characters from D-nominee 2008
+                         var input=d.D_Nominee;
+                         var fixedDNominee = "";
+                            for (var i=0; i<input.length; i++) {
+                                if (input.charCodeAt(i) <= 127) {
+                                    fixedDNominee += input.charAt(i);
+                                }
+                            }
+                           div.transition()
+                               .duration(200)
+                               .style("opacity", .9);
+                           div.html(d.State+ "<br/>"  + "Electoral Votes: " + electorals + "<br/>" + fixedDNominee + ": " + d.D_Votes + "(" + d.D_Percentage + "%)"
+                            + "<br/>" +  d.R_Nominee + ": " + d.R_Votes + "(" + d.R_Percentage + "%)")
+                               .style("left", (d3.event.pageX) + "px")
+                               .style("top", (d3.event.pageY - 28) + "px");
+                           })
+
+                       .on("mouseout", function(d) {
+                           div.transition()
+                               .duration(500)
+                               .style("opacity", 0);
+                       });
+
+
+                       svg.selectAll("text.abbrevs")
+                           .data(data)
+                           .enter()
+                           .append("text")
+                             .attr("class", "abbrevs")
+                           .text(function(d) {
+                             return d['Abbreviation'];
+                           })
+                           .attr("text-anchor", "middle")
+                           .attr("x", function(d){
+                             var name = d.Abbreviation;
+                             if(d.State == ""){
+                               return null;
+                             }
+
+                             var column = JSONArray[name].column;
+                             return (column * w/12) + w/24;
+
+                           })
+                           .attr("y", function(d){
+                               var name = d.Abbreviation;
+                               if(d.State == ""){
+                                 return null;
+                               }
+                               var rows =   JSONArray[name].row;
+                               return rows * h/12+ h/24;
+
+                           })
+                           .style("fill", "rgb(255,255,255)");
+
+
+                           svg.selectAll("text.electoral")
+                               .data(data)
+                               .enter()
+                               .append("text")
+                                .attr("class", "electoral")
+                               .text(function(d) {
+                                 if(d['Total_EV'] == null){
+                                   return d['N'];
+                                 }
+                                 return d['Total_EV'];
+                               })
+                               .attr("text-anchor", "middle")
+                               .attr("x", function(d){
+                                 if(d.State == ""){
+                                   return null;
+                                 }
+                                 var name = d.Abbreviation;
+
+                                 var column = JSONArray[name].column;
+                                 return (column * w/12) + w/24;
+
+                               })
+                               .attr("y", function(d){
+                                 if(d.State == ""){
+                                   return null;
+                                 }
+                                   var name = d.Abbreviation;
+                                   var rows =   JSONArray[name].row;
+                                   return (rows * h/12) + h/16;
+
+                               })
+                               .style("fill", "rgb(255,255,255)");
+
+        })
+      }
+      })
+
+
+        </script>
+    </body>
+</html>
