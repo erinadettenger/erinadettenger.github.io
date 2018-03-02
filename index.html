@@ -8,9 +8,9 @@
 
         div.tooltip {
             position: absolute;
-            text-align: center;
-            width: 140px;
-            height: 90px;
+            text-align: left;
+            width: 250px;
+            height: 80px;
             padding: 2px;
             font: 12px sans-serif;
             background: lightsteelblue;
@@ -600,7 +600,7 @@ function updateData() {
                            div.transition()
                                .duration(200)
                                .style("opacity", .9);
-                           div.html(d.State+ "<br/>"  + "Electoral Votes: " + electorals + "<br/>" + fixedDNominee + ": " + d.D_Votes + "(" + d.D_Percentage + "%)"
+                           div.html(d.State+ "<br/><br/>"  + "Electoral Votes: " + electorals + "<br/>" + fixedDNominee + ": " + d.D_Votes + "(" + d.D_Percentage + "%)"
                             + "<br/>" +  d.R_Nominee + ": " + d.R_Votes + "(" + d.R_Percentage + "%)")
                                .style("left", (d3.event.pageX) + "px")
                                .style("top", (d3.event.pageY - 28) + "px");
