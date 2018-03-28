@@ -2,15 +2,16 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>D3 Test</title>
+        <title>Frats vs. Gangs</title>
         <script src="https://d3js.org/d3.v4.js"></script>
+         <!-- <script src = "dropdown_options.js"></script>  -->
         <style type="text/css">
 
         div.tooltip {
             position: absolute;
             text-align: left;
-            width: 250px;
-            height: 80px;
+            width: 240px;
+            height: 65px;
             padding: 2px;
             font: 12px sans-serif;
             background: lightsteelblue;
@@ -19,446 +20,182 @@
             pointer-events: none;
         }
 
-		</style>
-    </head>
-    <body>
-      <h1 id="p1">US Election Results 2016</h1>
+        .percentage{
+          color: darkslategray;
+          font-weight: bold;
+          font: 160% sans-serif;
+          text-align: left;
+          display: inline;
 
-        <script type="text/javascript">
-        var selectedYear = "2016";
-
-        function updateTitle(){
-          // var w = 1000;
-          // var h = 100;
-          // var svg = d3.select("body")
-          //             .append("svg")
-          //             .attr("class", "title")
-          //             .attr("width", w)
-          //             .attr("height", h);
-          //
-          //     svg.selectAll("text")
-          //         .enter()
-          //         .append("text")
-          //         .text("US Presidental Election Results:" + selectedYear)
-          //         .attr("text-anchor", "middle")
-          //         .attr("x", w*.1)
-          //         .attr("y",  h*.5)
-          //         .style("fill", "rgb(0,0,0)");
-          document.getElementById("p1").innerHTML = "US Election Results " + selectedYear;
 
         }
-        updateTitle();
-        console.log("SY" + selectedYear);
-        d3.csv("data/yearwise-winner.csv", function(data) {
-          var w = 1000;
-          var h = 150;
-          var boxPadding = 1;
-          console.log(data[0]);
-          var svg = d3.select("body")
-                      .append("svg")
-                      .attr("width", w)
-                      .attr("height", h);
+        h2{
+          font: 40px sans-serif;
+        }
+        .genderyear{
 
-          svg.selectAll("circle")
-              .data(data)
-              .enter()
-              .append("circle")
-              .attr("cx", function(d, i){
-                console.log("got  here");
-                return w/10 + (w/24 * i);
+          text-align: left;
+          font: 140% sans-serif;
+          display:inline;
+        }
+        #maletext{
+            color: blue;
+        }
+        #femaletext{
+          color: orangered;
+        }
+        #tgqntext{
+          color: yellow;
+        }
+        .year{
+          font: 15px sans-serif;
+        }
 
-              })
-              .attr("cy", function(d, i){
+        h1{
+          font-weight: lighter;
+          font-family: sans-serif;
+        }
 
-                  return h*.2;
 
-              })
-              .attr("r", function(d){
-                  return 8;
-              })
-              .style("fill", function(d) {
-                  if(d['PARTY'] == 'D'){
-                    return "rgb(0, 0 , 255)";
+        .heyhey {
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 1.35em;
+          margin-bottom: 40px;
+          color: black;
+          padding: 0 50px;
+          padding-top: 50px;
+          -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
+        }
+
+        #baselinetext{
+
+          font-family: sans-serif;
+          font-size:  16px;
+        background-color: grey; color: white;
+        }
+
+		</style>
+
+    </head>
+    <body>
+
+
+        <script type="text/javascript">
+        function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0, //parseFloat(text.attr("dy")),
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                            .text(word);
+            }
+        }
+    });
+}
+
+        var textwidth = 1000;
+        var textheight = 1000;
+        var textbaby;
+        var textbabytwo;
+
+        function readTextFile(file)
+          {
+              var rawFile = new XMLHttpRequest();
+              rawFile.open("GET", file, false);
+              rawFile.onreadystatechange = function ()
+              {
+                  if(rawFile.readyState === 4)
+                  {
+                      if(rawFile.status === 200 || rawFile.status == 0)
+                      {
+                          var allText = rawFile.responseText;
+                          if(file == "firsthalftext.txt"){
+                            textbaby = allText;
+                          }
+                          else{
+                            textbabytwo = allText;
+                          }
+
+                        //  alert(allText);
+                      }
                   }
-                  else{
-                    return "rgb(255, 0 , 0)";
-                  }
-    })
-            .on("click", function(d) {
-              selectedYear = d['YEAR'];
-              console.log("GOT IT");
-              updateData();
-                //d3.select("svg.title").remove();
-              updateTitle();
-              d3.select("svg.map").remove();
-
-                });
-
-              svg.selectAll("text.timeline")
-                  .data(data)
-                  .enter()
-                  .append("text")
-                    .attr("class", "timeline")
-                  .text(function(d) {
-                    return d['YEAR'];
-                  })
-                  .attr("text-anchor", "middle")
-                  .attr("x", function(d,i){
-
-                    return w/10 + (w/24 * i);
-
-                  })
-                  .attr("y", function(d){
-
-                      return h*.45;
-
-                  })
-                  .style("fill", "rgb(0,0,0)");
+              }
+              rawFile.send(null);
+          }
+          readTextFile("firsthalftext.txt");
+         readTextFile("secondhalftext.txt");
 
 
-                  var increment = w/8;
-                  var legend = ['-60.0 to -50.0','-50.0 to -40.0','-40.0 to -30.0','-30.0 to -20.0','-20.0 to -10.0','-10.0 to 0','0 to 10.0','10.0 to 20.0','20.0 to 30.0','30.0 to 40.0','40.0 to 50.0','50.0 to 60.0'];
-                  var boxPadding = 1;
-
-                  //LEGEND
-              svg.selectAll("rect")
-                  .data(legend)
-                  .enter()
-                  .append("rect")
-                  .attr("x", function(d,i){
-                    //increment += w/24;
-                    return i * (w / legend.length);
-
-                  })
-                  .attr("y", function(d){
-                      return h * .7;
-
-                  })
-
-                  .attr("width", w / legend.length - boxPadding)
-                  .attr("height", function(d) {
-                      return h/12;
-                   })
-                   .style("fill", function(d,i) {
-                     var blue = 0;
-                     var green = 0;
-                     var red = 0;
-                     if(i == 11 ){
-                       red = 102;
-                       green = 0;
-                       blue = 0;
-
-                     }
-                     else if(i == 10){
-                       red = 204;
-                       green = 0;
-                       blue = 0;
-                     }
-                     else if(i == 9){
-                       red = 255;
-                       green = 0;
-                       blue = 0;
-                     }
-                     else if(i == 8){
-                       red = 255;
-                       green = 51;
-                       blue = 51;
-                     }
-                     else if(i == 7){
-                       red = 255;
-                       green = 102;
-                       blue = 102;
-                     }
-                     else if(i == 6){
-                       red = 255;
-                       green = 153;
-                       blue = 153;
-                     }
-                     else if(i == 5){
-                       red = 153;
-                       green = 153;
-                       blue = 255;
-                     }
-                     else if(i == 4){
-                       red = 102;
-                       green = 102;
-                       blue = 255;
-                     }
-                     else if(i == 3){
-                       red = 51;
-                       green = 51;
-                       blue = 255;
-                     }
-                     else if(i == 2){
-                       red = 0;
-                       green = 0;
-                       blue = 255;
-                     }
-                     else if(i == 1){
-                       red = 0;
-                       green = 0;
-                       blue = 204;
-                     }
-                     else if(i == 0){
-                       red = 0;
-                       green = 0;
-                       blue = 102;
-                     }
-                     return "rgb(" + red+ ", " + green+ "," + blue  +")";
+        d3.select("body").append("text")
+        .html(textbaby)
+        .attr("class", "heyhey");
+                    // .call(wrap, 950);
 
 
+        var selection = "currentyear";
+        var selectionTitle = "Percent of Students Experiencing Unwanted Sexual Contact by <b><br/>Current Year</b>";
+        var selectedCurrentYear = true;
+        var w = 700;
+        var h = 250;
+        var boxPadding = 1;
+        var buttonlabel = "Since entering college stats";
+        var textlocation = w*.71;
+        var GraphState = "Female";
+        var selectorChooseValue = "Female";
 
-
-        });
-        var incthisbish = 0;
-            svg.selectAll("text.legend")
-                .data(legend)
-                .enter()
-                .append("text")
-                 .attr("class", "legend")
-                .text(function(d,i) {
-                  return legend[i];
-                })
-                .attr("text-anchor", "middle")
-                .attr("font-size", "13px")
-                .attr("x", function(d,i){
-                  //increment += w/24;
-                  if (i == 0){
-                    incthisbish += w / (legend.length*1.98)
-                  }
-                  else{
-                    incthisbish += (w / (legend.length));
-                  }
-
-                  return incthisbish;
-
-                })
-                .attr("y", function(d){
-                    return h * .9;
-
-                })
-                .style("fill", "rgb(0,0,0)");
-
-                updateData();
-function updateData() {
-
-          d3.csv("data/election-results-" + selectedYear + ".csv", function(data) {
-
-              var w = 1000;
-              var h = 700;
-              var boxPadding = 1;
-              var found = data[3];
-              var percentDifference = 0;
-
+        function updateData() {
+        //  document.getElementById("h1").innerHTML = selectionTitle;
+          console.log("Beginning of UD graphstate: " + GraphState);
+            d3.csv("data/" + selection + ".csv", function(data) {
               var JSONArray = {
 
-                  "AK": {
-                      "row":0,
-                      "column": 0
+                  "Freshman": {
+                      "Male":0,
+                      "Female": w/2,
+                      "TGQN": 0
                   },
-                  "ME": {
-                      "row": 0,
-                      "column": 11
-                  },
-
-                 "VT": {
-                      "row":1,
-                      "column": 10
-                  },
-                  "NH": {
-                      "row": 1,
-                      "column": 11
-                  },
-                  "WA" : {
-                    "row": 2,
-                    "column": 1
-                  },
-                  "ID" : {
-                    "row": 2,
-                    "column": 2
-                  },
-                  "MT" : {
-                    "row": 2,
-                    "column": 3
-                  },
-                  "ND" : {
-                    "row": 2,
-                    "column": 4
-                  },
-                  "MN" : {
-                    "row": 2,
-                    "column": 5
-                  },
-                  "IL" : {
-                    "row": 2,
-                    "column": 6
+                  "Sophomore": {
+                      "Male":0,
+                      "Female": w/2,
+                      "TGQN": 0
                   },
 
-                  "WI" : {
-                    "row": 2,
-                    "column": 7
+                 "Junior": {
+                     "Male":0,
+                     "Female": w/2,
+                     "TGQN": 0
                   },
-                  "MI" : {
-                    "row": 2,
-                    "column": 8
-                  },
-                  "NY" : {
-                    "row": 2,
-                    "column": 9
-                  },
-                  "RI" : {
-                    "row": 2,
-                    "column": 10
-                  },
-                  "MA" : {
-                    "row": 2,
-                    "column": 11
-                  },
-                  "OR" : {
-                    "row": 3,
-                    "column": 1
-                  },
-                  "NV" : {
-                    "row": 3,
-                    "column": 2
-                  },
-                  "WY" : {
-                    "row": 3,
-                    "column": 3
-                  },
-                  "SD" : {
-                    "row": 3,
-                    "column": 4
-                  },
-                  "IA" : {
-                    "row": 3,
-                    "column": 5
-                  },
-                  "IN" : {
-                    "row": 3,
-                    "column": 6
-                  },
-                  "OH" : {
-                    "row": 3,
-                    "column": 7
-                  },
-                  "PA" : {
-                    "row": 3,
-                    "column": 8
-                  },
-                  "NJ" : {
-                    "row": 3,
-                    "column": 9
-                  },
-                  "CT" : {
-                    "row": 3,
-                    "column": 10
-                  },
-                  "CA" : {
-                    "row": 4,
-                    "column": 1
-                  },
-                  "UT" : {
-                    "row": 4,
-                    "column": 2
-                  },
-                  "CO" : {
-                    "row": 4,
-                    "column": 3
-                  },
-                  "NE" : {
-                    "row": 4,
-                    "column": 4
-                  },
-                  "MO" : {
-                    "row": 4,
-                    "column": 5
-                  },
-                  "KY" : {
-                    "row": 4,
-                    "column": 6
-                  },
-                  "WV" : {
-                    "row": 4,
-                    "column": 7
-                  },
-                  "VA" : {
-                    "row": 4,
-                    "column": 8
-                  },
-                  "MD" : {
-                    "row": 4,
-                    "column": 9
-                  },
-                  "DC" : {
-                    "row": 4,
-                    "column": 10
-                  },
-                  "AZ" : {
-                    "row": 5,
-                    "column": 2
-                  },
-                  "NM" : {
-                    "row": 5,
-                    "column": 3
-                  },
-                  "KS" : {
-                    "row": 5,
-                    "column": 4
-                  },
-                  "AR" : {
-                    "row": 5,
-                    "column": 5
-                  },
-                  "TN" : {
-                    "row": 5,
-                    "column": 6
-                  },
-                  "NC" : {
-                    "row": 5,
-                    "column": 7
-                  },
-                  "SC" : {
-                    "row": 5,
-                    "column": 8
-                  },
-                  "DE" : {
-                    "row": 5,
-                    "column": 9
-                  },
-                  "OK" : {
-                    "row": 6,
-                    "column": 4
-                  },
-                  "LA" : {
-                    "row": 6,
-                    "column": 5
-                  },
-                  "MS" : {
-                    "row": 6,
-                    "column": 6
-                  },
-                  "AL" : {
-                    "row": 6,
-                    "column": 7
-                  },
-                  "GA" : {
-                    "row": 6,
-                    "column": 8
-                  },
-                  "HI" : {
-                    "row": 7,
-                    "column": 1
-                  },
-                  "TX" : {
-                    "row": 7,
-                    "column": 4
-                  },
-                  "FL" : {
-                    "row": 7,
-                    "column": 9
-                  },
-            }
+
+                  "Senior": {
+                      "Male":0,
+                      "Female": w/2,
+                      "TGQN": 0
+                  }
+                };
+
 
 
 
@@ -467,219 +204,468 @@ function updateData() {
                 .style("opacity", 0);
 
 
+
               var svg = d3.select("body")
                           .append("svg")
                           .attr("class", "map")
                           .attr("width", w)
                           .attr("height", h);
 
+              var zeropoint = w*.1 + w*.45;
+              var trueXAxisLength = w*.9;
+              var fakeXAxisLength = 100;
 
 
-            var nextXPosition = 0;
-            var thisXPosition = 0;
-            var thisYPosition = 0;
-            var nextYPosition = 0;
-            svg.selectAll("rect")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", function(d){
-                  var name = d.Abbreviation;
-                    if(d.State == ""){
-                      return null;
+                svg.append("line")
+                .style("stroke", "black")
+                .attr("x1", w*.15)     // x position of the first end of the line
+                .attr("y1", h*.6)      // y position of the first end of the line
+                .attr("x2", w*.15 + trueXAxisLength)     // x position of the second end of the line
+                .attr("y2", h*.6);
+
+                svg.append("line")
+                .style("stroke", "black")
+                .attr("x1", zeropoint)     // x position of the first end of the line
+                .attr("y1", h*.01)
+                .attr("x2", zeropoint)     // x position of the second end of the line
+                .attr("y2", h*.6);
+
+                var tickwidth = w*.1;
+                var label = 50;
+                var negside = true;
+
+                for(var i = 0; i < 12; i++){
+                  svg.append("line")
+                  .style("stroke", "black")
+                  .attr("x1", tickwidth)     // x position of the first end of the line
+                  .attr("y1", h*.58)      // y position of the first end of the line
+                  .attr("x2", tickwidth)     // x position of the second end of the line
+                  .attr("y2", h*.61);
+
+
+                  svg.append("text")
+                      .text(label)
+                      .attr("text-anchor", "middle")
+                      .attr("x", tickwidth)
+                      .attr("y", h*.66)
+                      .style("fill", "rgb(0,0,0)");
+
+                    tickwidth += trueXAxisLength/10;
+                    if(label >0 && negside){
+                      label -=10;
                     }
-                  var column = JSONArray[name].column;
-
-                  return column * w/12;
-
-                })
-                .attr("y", function(d,i){
-                    var name = d.Abbreviation;
-                    if(d.State == ""){
-                      return null;
+                    else if (label == 0){
+                      negside = false;
+                      label +=10;
                     }
-                    var rows =   JSONArray[name].row;
-                    return rows * h/12;
-
-                })
-
-                .attr("width", (w/12) - boxPadding)
-                .attr("height", function(d) {
-                    return h/12;
-                 })
-                 .style("fill", function(d) {
-
-                      found = d;
+                    else if(label >0 && label !=50){
+                      label += 10;
+                    }
+                }
 
 
-                          percentDifference = parseFloat(found.D_Percentage - found.R_Percentage);
+              //MALE RECTANGLES
+              var males = svg.selectAll("rect.male")
+                  .data(data)
+                  .enter()
+                  .append("rect")
+                  .attr("class", "male")
+                  .attr("x", function(d){
 
-                         var blue = 0;
-                         var green = 0;
-                         var red = 0;
-                         //console.log(d['Abbreviation'] + ": " + percentDifference);
-                         if(percentDifference < parseFloat(-50.0) ){
-                           red = 102;
-                           green = 0;
-                           blue = 0;
+                  var xpos;
 
-                         }
-                         else if(percentDifference< parseFloat(-40.0) ){
-                           red = 204;
-                           green = 0;
-                           blue = 0;
-                         }
-                         else if(percentDifference<parseFloat(-30.0) ){
-                           red = 255;
-                           green = 0;
-                           blue = 0;
-                         }
-                         else if(percentDifference<parseFloat(-20.0) ){
-                           red = 255;
-                           green = 51;
-                           blue = 51;
-                         }
-                         else if(percentDifference<parseFloat(-10.0)){
-                           red = 255;
-                           green = 102;
-                           blue = 102;
-                         }
-                         else if(percentDifference<=0 ){
-                           red = 255;
-                           green = 153;
-                           blue = 153;
-                         }
-                         else if(percentDifference<10.0){
-                           red = 153;
-                           green = 153;
-                           blue = 255;
-                         }
-                         else if(percentDifference<20.0){
-                           red = 102;
-                           green = 102;
-                           blue = 255;
-                         }
-                         else if(percentDifference<30.0 && percentDifference>=20){
-                           red = 51;
-                           green = 51;
-                           blue = 255;
-                         }
-                         else if(percentDifference<40.0 && percentDifference>=30){
-                           red = 0;
-                           green = 0;
-                           blue = 255;
-                         }
-                         else if(percentDifference<50.0 && percentDifference>=40){
-                           red = 0;
-                           green = 0;
-                           blue = 204;
-                         }
-                         else if(percentDifference>=50){
-                           red = 0;
-                           green = 0;
-                           blue = 102;
-                         }
-                         return "rgb(" + red+ ", " + green+ "," + blue  +")";
+                  if(GraphState == "Female"){
+                     xpos =  zeropoint - trueXAxisLength*(d.Male)/100;
+
+                  }
+                  else if (GraphState == "Male"){
+                      xpos = zeropoint;
+                  }
+                  else if(GraphState == "TGQN"){
+                    xpos =  zeropoint - trueXAxisLength*(d.Male)/100 - trueXAxisLength*(d.Female)/100;
+                  }
+                    return xpos;
+
+                  })
+                  .attr("y", function(d,i){
+
+                      return h/7+(h/8*(i-1));
+
+                  })
+
+                  .attr("width", function(d){
+                    return trueXAxisLength*(d.Male)/100;
+                  })
+                  .attr("height", function(d) {
+                      return h/24;
+                   })
+                 .style("fill", "rgb(102,102,255)");
 
 
-                       })
-                       .on("mouseover", function(d) {//IMPLEMENT TOOLTIP
-                         var electorals = d.Total_EV;
-                         var n = 'N';
-                         if(electorals == null){
-                           electorals = d.N;
-                         }
-                         //remove weird characters from D-nominee 2008
-                         var input=d.D_Nominee;
-                         var fixedDNominee = "";
-                            for (var i=0; i<input.length; i++) {
-                                if (input.charCodeAt(i) <= 127) {
-                                    fixedDNominee += input.charAt(i);
-                                }
-                            }
-                           div.transition()
-                               .duration(200)
-                               .style("opacity", .9);
-                           div.html(d.State+ "<br/><br/>"  + "Electoral Votes: " + electorals + "<br/>" + fixedDNominee + ": " + d.D_Votes + "(" + d.D_Percentage + "%)"
-                            + "<br/>" +  d.R_Nominee + ": " + d.R_Votes + "(" + d.R_Percentage + "%)")
-                               .style("left", (d3.event.pageX) + "px")
-                               .style("top", (d3.event.pageY - 28) + "px");
-                           })
+                 males.on("mouseover", function(d) {//IMPLEMENT TOOLTIP
+                     var maleStat = d.Male;
+                     div.transition()
+                         .duration(200)
+                         .style("opacity", .9);
+                     div.html("<div class=percentage>" + maleStat + "%</div> of <div class=genderyear id=maletext> " + d.Surveyitem + " males </div> <br>experience unwanted sexual contact")
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                     })
 
-                       .on("mouseout", function(d) {
-                           div.transition()
-                               .duration(500)
-                               .style("opacity", 0);
-                       });
+                   .on("mouseout", function(d) {
+                       div.transition()
+                           .duration(500)
+                           .style("opacity", 0);
+                   });
 
 
-                       svg.selectAll("text.abbrevs")
-                           .data(data)
-                           .enter()
-                           .append("text")
-                             .attr("class", "abbrevs")
-                           .text(function(d) {
-                             return d['Abbreviation'];
-                           })
-                           .attr("text-anchor", "middle")
-                           .attr("x", function(d){
-                             var name = d.Abbreviation;
-                             if(d.State == ""){
-                               return null;
-                             }
+                 //FEMALE RECTANGLES
+                 var females = svg.selectAll("rect.female")
+                     .data(data)
+                     .enter()
+                     .append("rect")
+                     .attr("class", "female")
+                     .attr("x", function(d){
+                       JSONArray[d.Surveyitem].TGQN = zeropoint + trueXAxisLength*(d.Female)/100;
 
-                             var column = JSONArray[name].column;
-                             return (column * w/12) + w/24;
+                       var xpos;
 
-                           })
-                           .attr("y", function(d){
-                               var name = d.Abbreviation;
-                               if(d.State == ""){
-                                 return null;
-                               }
-                               var rows =   JSONArray[name].row;
-                               return rows * h/12+ h/24;
+                       if(GraphState == "Female"){
+                          xpos =  zeropoint;
+                          console.log("its female");
 
-                           })
-                           .style("fill", "rgb(255,255,255)");
+                       }
+                       else if (GraphState == "Male"){
+                           xpos = zeropoint + trueXAxisLength*(d.Male)/100;
+                       }
+                       else if(GraphState == "TGQN"){
+                         xpos =  zeropoint - trueXAxisLength*(d.Female)/100;
+                       }
+
+                      return xpos;
+
+                     })
+                     .attr("y", function(d,i){
+
+                         return h/7+(h/8*(i-1));
+
+                     })
+
+                     .attr("width", function(d){
+                       return trueXAxisLength*(d.Female)/100;
+                     })
+                     .attr("height", function(d) {
+                         return h/24;
+                      })
+                    .style("fill", "rgb(255,128,0)");
+
+                    // females.transition()
+                    //       .duration(2500);
+
+                  females.on("mouseover", function(d) {//IMPLEMENT TOOLTIP
+                      var femaleStat = d.Female;
+                      div.transition()
+                          .duration(200)
+                          .style("opacity", .9);
+                      div.html("<div class=percentage>" + femaleStat + "%</div> of <div class=genderyear id=femaletext> " + d.Surveyitem + " females </div> <br>experience unwanted sexual contact")
+                          .style("left", (d3.event.pageX) + "px")
+                          .style("top", (d3.event.pageY - 28) + "px");
+                      })
+
+                    .on("mouseout", function(d) {
+                        div.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                    });
 
 
-                           svg.selectAll("text.electoral")
-                               .data(data)
-                               .enter()
-                               .append("text")
-                                .attr("class", "electoral")
-                               .text(function(d) {
-                                 if(d['Total_EV'] == null){
-                                   return d['N'];
-                                 }
-                                 return d['Total_EV'];
-                               })
-                               .attr("text-anchor", "middle")
-                               .attr("x", function(d){
-                                 if(d.State == ""){
-                                   return null;
-                                 }
-                                 var name = d.Abbreviation;
 
-                                 var column = JSONArray[name].column;
-                                 return (column * w/12) + w/24;
 
-                               })
-                               .attr("y", function(d){
-                                 if(d.State == ""){
-                                   return null;
-                                 }
-                                   var name = d.Abbreviation;
-                                   var rows =   JSONArray[name].row;
-                                   return (rows * h/12) + h/16;
 
-                               })
-                               .style("fill", "rgb(255,255,255)");
 
-        })
-      }
-      })
+                //TGQN RECTANGLES
+
+                var tgqns = svg.selectAll("rect.tgqn")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "tgqn")
+
+                    .attr("x", function(d){
+
+                      var xpos;
+
+                      if(GraphState == "Female"){
+                         xpos =  JSONArray[d.Surveyitem].TGQN;
+
+                      }
+                      else if (GraphState == "Male"){
+                          xpos = JSONArray[d.Surveyitem].TGQN + trueXAxisLength*(d.Male)/100;
+                      }
+                      else if(GraphState == "TGQN"){
+                        xpos =  zeropoint;
+                      }
+
+                     return xpos;
+
+
+                    })
+                    .attr("y", function(d,i){
+
+                        return h/7+(h/8*(i-1));
+
+                    })
+
+                    .attr("width", function(d){
+                      return trueXAxisLength*(d.TGQN)/100;
+                    })
+                    .attr("height", function(d) {
+                        return h/24;
+                     })
+                   .style("fill", "rgb(255,255,152)");
+
+                  // tgqns.transition()
+                  //       .duration(2500);
+
+                   tgqns.on("mouseover", function(d) {//IMPLEMENT TOOLTIP
+                     var tgqnStat = d.TGQN;
+                     div.transition()
+                         .duration(200)
+                         .style("opacity", .9);
+                     div.html("<div class=percentage>" + tgqnStat + "%</div> of <div class=genderyear id=tgqntext>" + d.Surveyitem + " TGQN </div> <br>(transgender, genderqueer, questioning, noncomforming) <br> experience unwanted sexual contact")
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                     })
+
+                   .on("mouseout", function(d) {
+                       div.transition()
+                           .duration(500)
+                           .style("opacity", 0);
+                   });
+
+
+
+
+
+                 svg.selectAll("text.year")
+                     .data(data)
+                     .enter()
+                     .append("text")
+                      .attr("class", "year")
+                     .text(function(d) {
+
+                       return d['Surveyitem'];
+                     })
+                     .attr("text-anchor", "middle")
+                     .attr("x", function(d,i){
+
+                       return w*.1;
+
+                     })
+                     .attr("y", function(d,i){
+
+                         return h/5.3+(h/6.9*(i-1));
+
+                     })
+                     .style("fill", "rgb(0,0,0)");
+
+
+                     svg.append("rect")
+                     .style("fill", "rgb(150,150,150)")
+                     .attr("rx", "15")
+                     .attr("ry", "15")
+                    // .attr("x", zeropoint-(zeropoint*.1))     // x position of the first end of the line
+                    .attr("x", w*.7)
+                     .attr("y", h*.8)      // y position of the first end of the line
+                     .attr("width", w/3.4)     // x position of the second end of the line
+                     .attr("height", h/6)
+                     .on("click", function(d) {
+                       if (selectedCurrentYear){
+                          selectionTitle = "Percent of Students Experiencing Unwanted Sexual Contact <br><b> Since Entering College </b>";
+                          selection = "sinceenteringcollege";
+                          buttonlabel = "Current year stats";
+                          textlocation = w*.75;
+                       }
+                       else{
+                         selectionTitle = "Percent of Students Experiencing Unwanted Sexual Contact by <br/><b>Current Year</b>";
+                         selection = "currentyear";
+                        buttonlabel = "Since entering college stats";
+                          textlocation = w*.71;
+                       }
+
+                      selectedCurrentYear = !selectedCurrentYear;
+                       d3.select("svg.map").remove();
+                       d3.select("text#morewriting").remove();
+                       d3.select("h1.stitle").remove();
+                       d3.select("select.select").remove();
+                        d3.select("text#baselinetext").remove();
+
+                       //THIS IS WHERE I MESS WITH STUFF
+                        putTitleIn();
+                        putSelectorIn();
+                       updateData();
+                       //putSecondHalfTextIn();
+
+
+
+                         });
+                         svg.append("text")
+                         .text(buttonlabel)
+                         .style("font-family", "sans-serif")
+                         .style("font", "8px")
+                         .style("fill", "rgb(255,255,255)")
+                         .attr("position", "absolute")
+                         .attr("x", textlocation)
+                         .attr("y", h*.89);
+
+                  //LEGEND male
+                   svg.append("rect")
+                   .style("fill", "rgb(102,102,255)")
+                   .attr("x", w*.1)
+                   .attr("y", h*.7)
+                   .attr("width", w/20)
+                   .attr("height", h/35);
+
+                   svg.append("text")
+                   .text("male")
+                   .style("font-family", "sans-serif")
+                   .style("font", "2px")
+                   .attr("position", "absolute")
+                   .attr("x", w*.16)
+                   .attr("y", h*.73);
+
+//female
+                   svg.append("rect")
+                   .style("fill", "rgb(255,128,0)")
+                   .attr("x", w*.1)     // x position of the first end of the line
+                   .attr("y", h*.77)      // y position of the first end of the line
+                   .attr("width", w/20)
+                   .attr("height", h/35);
+
+                   svg.append("text")
+                   .text("female")
+                   .style("font-family", "sans-serif")
+                   .style("font", "2px")
+                   .attr("position", "absolute")
+                  .attr("x", w*.16)
+                   .attr("y", h*.8);
+
+
+//tgqn
+                   svg.append("rect")
+                   .style("fill", "rgb(255,255,152)")
+                   .attr("x", w*.1)     // x position of the first end of the line
+                   .attr("y", h*.84)      // y position of the first end of the line
+                   .attr("width", w/20)     // x position of the second end of the line
+                   .attr("height", h/35);
+
+                   svg.append("text")
+                   .text("tgqn")
+                   .style("font-family", "sans-serif")
+                   .style("font", "2px")
+                   .attr("position", "absolute")
+                   .attr("x", w*.16)
+                   .attr("y", h*.87);
+
+
+                              //  .append("svg")
+                              //  .attr("class", "writing")
+                              //  .attr("width", 1500)
+                              //  .attr("height", 1500);
+
+
+                      //  .call(wrap, 1000);
+
+
+putSecondHalfTextIn();
+
+            })
+          }
+
+
+              function onchange() {
+                selectValue = d3.select('select').property('value');
+                selectorChooseValue = selectValue;
+                GraphState = selectValue;
+                console.log("graphstate: " + selectValue);
+                d3.select("svg.map").remove();
+                // d3.select("h1.stitle").remove();
+                d3.select("text#morewriting").remove();
+                  d3.select("select.select").remove();
+                  d3.select("text#baselinetext").remove();
+                updateData();
+                putSelectorIn();
+                  // putSecondHalfTextIn();
+
+
+    };
+
+function putTitleIn(){
+  d3.select('body')
+    .append('h1')
+      .attr('class','stitle')
+      .html(selectionTitle);
+}
+
+
+function putSelectorIn(){
+        d3.select('body')
+        .append('text')
+        .attr('id', 'baselinetext')
+        .text("Baseline: ");
+
+        var select = d3.select('body')
+          .append('select')
+            .attr('class','select')
+            .on('change',onchange);
+            console.log("SCV" + selectorChooseValue);
+
+
+        select.append('option')
+            .text("Female");
+
+        select.append('option')
+            .text("Male");
+
+        select.append('option')
+            .text("TGQN");
+
+            select.property('value', selectorChooseValue);
+
+
+
+    }
+
+    function putSecondHalfTextIn(){
+
+
+
+  d3.select("body").append("text")
+        .attr('id', 'morewriting')
+        .attr('class','heyhey')
+        .attr("dy", "5em") // you can vary how far apart it shows up
+        .html(textbabytwo)
+        .attr('x', w*.05)
+        .attr('y', h*.1);
+    }
+
+
+putTitleIn();
+putSelectorIn();
+  updateData();
+//  putSecondHalfTextIn();
+
+
+  // d3.select('body')
+  // .append('text')
+  // .html(textbabytwo);
+
+
+
+
+
+
+
 
 
         </script>
